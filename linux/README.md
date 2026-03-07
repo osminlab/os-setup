@@ -1,1 +1,0 @@
-Esto debe de explicar como instalo WSL y los programas internamente
