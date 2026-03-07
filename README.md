@@ -31,10 +31,16 @@ Configure a new machine with **one command** — installs developer tools, GUI a
 
 ## 🚀 Quick Start
 
-### One-Line Install (Linux / macOS / WSL)
+### One-Line Install (Linux / macOS)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/osminlab/os-setup/main/install.sh | bash
+```
+
+### One-Line Install (Windows)
+
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://raw.githubusercontent.com/osminlab/os-setup/main/install.ps1 | iex"
 ```
 
 ### Manual Install
@@ -91,7 +97,8 @@ os-setup/
 ├── vscode/
 │   └── extensions.txt      # VS Code extension IDs
 │
-├── install.sh              # Curl bootstrap installer (installs uv)
+├── install.ps1             # PowerShell bootstrap installer (Windows)
+├── install.sh              # Curl bootstrap installer (Linux/macOS)
 ├── pyproject.toml          # Project metadata and dependencies (uv)
 └── README.md
 ```
