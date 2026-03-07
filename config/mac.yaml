@@ -1,0 +1,26 @@
+# ──────────────────────────────────────────────────
+# mac.yaml — macOS packages (Homebrew formulae & casks)
+# ──────────────────────────────────────────────────
+
+# Core tools you'd want on every machine
+essentials:
+  - git
+  - python@3
+  - zsh
+
+# Development-specific tools
+dev_tools:
+  - node
+  - nvm
+  - docker
+
+# Terminal enhancement utilities
+cli_tools:
+  - fzf
+  - tree
+
+# GUI applications (Homebrew casks)
+apps:
+  - visual-studio-code
+  - postman
+  - google-chrome
