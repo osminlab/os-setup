@@ -28,7 +28,8 @@ def _select_mode() -> str:
             choice = input("Enter 1 or 2: ").strip()
         except (EOFError, KeyboardInterrupt):
             print()
-            sys.exit(0)
+            print_error("Operation cancelled by user.")
+            sys.exit(130)
         if choice == "1":
             return "automatic"
         if choice == "2":

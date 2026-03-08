@@ -19,6 +19,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import Any
+import subprocess
 
 import yaml
 
@@ -46,7 +47,7 @@ class Installer:
 
     Parameters
     ----------
-    os_name : One of ``'windows'``, ``'ubuntu'``, ``'wsl'``, ``'mac'``.
+    os_name : One of ``'windows'``, ``'mac'``, or a supported Linux distro (e.g., ``'ubuntu'``, ``'fedora'``).
     mode    : ``'automatic'`` or ``'interactive'``.
     """
 
@@ -148,7 +149,7 @@ class Installer:
             print_header("Applications")
             for app in apps:
                 if self.os_name == "mac" and hasattr(self.pm, "install_cask"):
-                    self.pm.install_cask(app)
+                    getattr(self.pm, "install_cask")(app)
                 else:
                     self.pm.install_if_missing(app)
 
@@ -203,7 +204,13 @@ class Installer:
             if not result.stdout.strip():
                 name = prompt_input("Enter your Git user.name")
                 if name:
-                    run_command(f'git config --global user.name "{name}"')
+                    print_info(f"$ git config --global user.name \"{name}\"")
+                    subprocess.run(
+                        ["git", "config", "--global", "user.name", name],
+                        check=True,
+                        text=True,
+                        capture_output=False
+                    )
             else:
                 print_success(f"Git user.name = {result.stdout.strip()}")
 
@@ -216,7 +223,13 @@ class Installer:
             if not result.stdout.strip():
                 email = prompt_input("Enter your Git user.email")
                 if email:
-                    run_command(f'git config --global user.email "{email}"')
+                    print_info(f"$ git config --global user.email \"{email}\"")
+                    subprocess.run(
+                        ["git", "config", "--global", "user.email", email],
+                        check=True,
+                        text=True,
+                        capture_output=False
+                    )
             else:
                 print_success(f"Git user.email = {result.stdout.strip()}")
 

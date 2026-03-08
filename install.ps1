@@ -24,10 +24,14 @@ function Write-Error { param([string]$msg) Write-Host "✖  $msg" -ForegroundCol
 
 # ── 1. Check Python ────────────────────────────
 Write-Info "Checking for Python 3…"
-$PYTHON = "python"
+$PYTHON = "python3"
 if (-Not (Get-Command $PYTHON -ErrorAction SilentlyContinue)) {
-    Write-Error "Python 3 is required but not found. Please install Python 3 first."
+    $PYTHON = "python"
+    if (-Not (Get-Command $PYTHON -ErrorAction SilentlyContinue)) {
+        Write-Error "Python 3 is required but not found. Please install Python 3 first."
+    }
 }
+
 $pythonVersion = & $PYTHON --version 2>&1
 Write-Info "Found: $pythonVersion"
 
@@ -42,7 +46,7 @@ Write-Info "Checking for uv…"
 if (-Not (Get-Command uv -ErrorAction SilentlyContinue)) {
     Write-Info "Installing uv (Python package manager)…"
     Invoke-RestMethod https://astral.sh/uv/install.ps1 | Invoke-Expression
-    
+
     # Temporarily add uv to the current session's PATH
     $env:PATH = "$HOME\.cargo\bin;$env:PATH"
 } else {
