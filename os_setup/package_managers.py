@@ -85,7 +85,7 @@ class AptManager(PackageManager):
     def update(self) -> None:
         print_step("Updating apt package lists…")
         # shell=True required: uses && to chain two commands
-        run_command("sudo apt update -y && sudo apt upgrade -y", shell=True)
+        run_command("sudo apt update && sudo apt upgrade -y", shell=True)
 
     def install(self, package: str) -> None:
         run_command(["sudo", "apt", "install", "-y", package])
