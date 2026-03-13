@@ -71,13 +71,11 @@ info "Installing Python dependencies via uv…"
 WRAPPER="$HOME/.local/bin/os-setup"
 mkdir -p "$(dirname "$WRAPPER")"
 
-cat > "$WRAPPER" << 'WRAPPER_EOF'
+cat > "$WRAPPER" << WRAPPER_EOF
 #!/usr/bin/env bash
-cd "__INSTALL_DIR__"
-exec uv run python -m os_setup.cli "$@"
+cd "$INSTALL_DIR"
+exec uv run python -m os_setup.cli "\$@"
 WRAPPER_EOF
-# Substitute the actual install path into the wrapper script
-sed -i "s|__INSTALL_DIR__|$INSTALL_DIR|g" "$WRAPPER"
 chmod +x "$WRAPPER"
 
 # ── 7. Ensure ~/.local/bin is on PATH ─────────
