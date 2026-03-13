@@ -1,0 +1,62 @@
+# ──────────────────────────────────────────────────
+# windows.yaml — Windows packages (winget IDs)
+# ──────────────────────────────────────────────────
+
+# Core tools you'd want on every machine
+essentials:
+  # Browsers
+  - Google.Chrome
+  - Brave.Brave
+
+  # Productivity
+  - Notion.Notion
+  - Obsidian.Obsidian
+  - Discord.Discord
+  - Spotify.Spotify
+  - Google.GoogleDrive
+  - Microsoft.OneDrive
+
+  # Utilities
+  - 7zip.7zip
+  - VideoLAN.VLC
+  - Microsoft.PowerToys
+
+
+# Development-specific tools
+dev_tools:
+  # IDEs
+  - Microsoft.VisualStudioCode
+  - Google.Antigravity
+  - Anysphere.Cursor
+
+  # Version Control
+  - Git.Git
+  - GitHub.GitHubDesktop
+
+  # Terminal enhancement utilities
+  - Microsoft.WindowsTerminal
+  - Microsoft.PowerShell
+
+  # Languages and Runtimes
+  - Docker.DockerDesktop
+  - OpenJS.NodeJS.LTS
+  - CoreyButler.NVMforWindows
+  - Python.PythonInstallManager
+
+  # API tools
+  - Postman.Postman
+  - cURL.cURL
+  - Google.CloudSDK
+
+  # Database tools
+  - dbeaver.dbeaver
+  - DuckDB.cli
+  - PostgreSQL.PostgreSQL.18
+
+
+# Terminal enhancement utilities
+cli_tools:
+  - junegunn.fzf
+  - sharkdp.bat
+  - ajeetdsouza.zoxide
+  - Starship.Starship

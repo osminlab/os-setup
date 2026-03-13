@@ -1,0 +1,25 @@
+# ──────────────────────────────────────────────────
+# fedora.yaml — Fedora / RHEL family packages (dnf)
+# ──────────────────────────────────────────────────
+
+# Core tools you'd want on every machine
+essentials:
+  - git
+  - curl
+  - wget
+  - gcc
+  - make
+
+# Development-specific tools
+dev_tools:
+  - python3
+  - python3-pip
+  - nodejs
+  - npm
+  - zsh
+
+# Terminal enhancement utilities
+cli_tools:
+  - fzf
+  - tree
+  - bat
