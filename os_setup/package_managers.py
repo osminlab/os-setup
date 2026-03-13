@@ -160,9 +160,18 @@ class BrewManager(PackageManager):
         run_command(["brew", "install", package])
 
     def install_cask(self, cask: str) -> None:
-        """Install a Homebrew Cask (GUI application)."""
-        print_step(f"Installing cask {cask}…")
-        run_command(["brew", "install", "--cask", cask])
+        """Install a Homebrew Cask (GUI application) if not already installed."""
+        try:
+            result = run_command(["brew", "list", "--cask", cask], check=False, capture=True)
+            if result.returncode == 0:
+                print_success(f"Cask '{cask}' is already installed")
+                return
+
+            print_step(f"Installing cask {cask}…")
+            run_command(["brew", "install", "--cask", cask])
+            print_success(f"Cask '{cask}' installed")
+        except Exception as exc:
+            print_error(f"Failed to install cask {cask}: {exc}")
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
