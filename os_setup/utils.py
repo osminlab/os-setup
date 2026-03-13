@@ -65,22 +65,24 @@ def print_info(text: str) -> None:
 # ── Command runner ──────────────────────────────────────────────────────────
 
 def run_command(
-    cmd: str,
+    cmd: list[str] | str,
     check: bool = True,
     capture: bool = False,
-    shell: bool = True,
+    shell: bool = False,
 ) -> subprocess.CompletedProcess:
     """
-    Execute a shell command.
+    Execute a command.
 
     Parameters
     ----------
-    cmd     : The command string to run.
+    cmd     : The command as a list of arguments (preferred) or a shell string.
     check   : Raise on non-zero exit code.
     capture : Capture stdout/stderr instead of printing.
-    shell   : Run through the system shell.
+    shell   : Run through the system shell (only when *cmd* is a string
+              that requires shell operators like ``&&`` or ``|``).
     """
-    print_info(f"$ {cmd}")
+    display = cmd if isinstance(cmd, str) else " ".join(cmd)
+    print_info(f"$ {display}")
     return subprocess.run(
         cmd,
         shell=shell,

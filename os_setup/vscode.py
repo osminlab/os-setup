@@ -61,7 +61,7 @@ def install_extensions(path: Path | None = None) -> None:
     print_step(f"Installing {len(extensions)} VS Code extension(s)…")
     for ext_id in extensions:
         result = run_command(
-            f"code --install-extension {ext_id} --force",
+            ["code", "--install-extension", ext_id, "--force"],
             check=False,
             capture=True,
         )

@@ -76,11 +76,13 @@ if (-Not (Test-Path $BIN_DIR)) {
 }
 
 $WRAPPER_PS1 = "$BIN_DIR\os-setup.ps1"
-@"
+$escapedDir = $INSTALL_DIR -replace "'", "''"
+$wrapperContent = @"
 #!/usr/bin/env pwsh
-Set-Location "$INSTALL_DIR"
+Set-Location '$escapedDir'
 uv run python -m os_setup.cli `$args
-"@ | Out-File -FilePath $WRAPPER_PS1 -Encoding utf8
+"@
+$wrapperContent | Out-File -FilePath $WRAPPER_PS1 -Encoding utf8
 
 $WRAPPER_CMD = "$BIN_DIR\os-setup.cmd"
 @"

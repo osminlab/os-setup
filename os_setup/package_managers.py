@@ -60,17 +60,19 @@ class PackageManager(ABC):
 class WingetManager(PackageManager):
     def update(self) -> None:
         print_step("Updating winget sources…")
-        run_command("winget source update", check=False)
+        run_command(["winget", "source", "update"], check=False)
 
     def install(self, package: str) -> None:
-        run_command(
-            f'winget install -e --id {package} --accept-package-agreements '
-            f'--accept-source-agreements --disable-interactivity',
-        )
+        run_command([
+            "winget", "install", "-e", "--id", package,
+            "--accept-package-agreements",
+            "--accept-source-agreements",
+            "--disable-interactivity",
+        ])
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
-            f"winget list -e --id {package} --disable-interactivity",
+            ["winget", "list", "-e", "--id", package, "--disable-interactivity"],
             check=False,
             capture=True,
         )
@@ -82,14 +84,15 @@ class WingetManager(PackageManager):
 class AptManager(PackageManager):
     def update(self) -> None:
         print_step("Updating apt package lists…")
-        run_command("sudo apt update -y && sudo apt upgrade -y")
+        # shell=True required: uses && to chain two commands
+        run_command("sudo apt update -y && sudo apt upgrade -y", shell=True)
 
     def install(self, package: str) -> None:
-        run_command(f"sudo apt install -y {package}")
+        run_command(["sudo", "apt", "install", "-y", package])
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
-            f"dpkg -s {package}",
+            ["dpkg", "-s", package],
             check=False,
             capture=True,
         )
@@ -101,14 +104,14 @@ class AptManager(PackageManager):
 class DnfManager(PackageManager):
     def update(self) -> None:
         print_step("Updating dnf package lists…")
-        run_command("sudo dnf upgrade -y")
+        run_command(["sudo", "dnf", "upgrade", "-y"])
 
     def install(self, package: str) -> None:
-        run_command(f"sudo dnf install -y {package}")
+        run_command(["sudo", "dnf", "install", "-y", package])
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
-            f"rpm -q {package}",
+            ["rpm", "-q", package],
             check=False,
             capture=True,
         )
@@ -120,14 +123,14 @@ class DnfManager(PackageManager):
 class PacmanManager(PackageManager):
     def update(self) -> None:
         print_step("Updating pacman package lists…")
-        run_command("sudo pacman -Syu --noconfirm")
+        run_command(["sudo", "pacman", "-Syu", "--noconfirm"])
 
     def install(self, package: str) -> None:
-        run_command(f"sudo pacman -S --noconfirm {package}")
+        run_command(["sudo", "pacman", "-S", "--noconfirm", package])
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
-            f"pacman -Q {package}",
+            ["pacman", "-Q", package],
             check=False,
             capture=True,
         )
@@ -144,24 +147,26 @@ class BrewManager(PackageManager):
     def update(self) -> None:
         if not shutil.which("brew"):
             print_step("Homebrew not found — installing…")
+            # shell=True required: Homebrew installer uses shell eval
             run_command(
                 f'NONINTERACTIVE=1 /bin/bash -c '
-                f'"$(curl -fsSL {self._BREW_INSTALL_URL})"'
+                f'"$(curl -fsSL {self._BREW_INSTALL_URL})"',
+                shell=True,
             )
         print_step("Updating Homebrew…")
-        run_command("brew update")
+        run_command(["brew", "update"])
 
     def install(self, package: str) -> None:
-        run_command(f"brew install {package}")
+        run_command(["brew", "install", package])
 
     def install_cask(self, cask: str) -> None:
         """Install a Homebrew Cask (GUI application)."""
         print_step(f"Installing cask {cask}…")
-        run_command(f"brew install --cask {cask}")
+        run_command(["brew", "install", "--cask", cask])
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
-            f"brew list {package}",
+            ["brew", "list", package],
             check=False,
             capture=True,
         )

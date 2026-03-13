@@ -19,7 +19,6 @@ import os
 import shutil
 from pathlib import Path
 from typing import Any
-import subprocess
 
 import yaml
 
@@ -166,7 +165,7 @@ class Installer:
                 current_shell = os.environ.get("SHELL", "")
                 if "zsh" not in current_shell:
                     print_step("Changing default shell to zsh…")
-                    run_command(f"chsh -s {zsh_path}", check=False)
+                    run_command(["chsh", "-s", zsh_path], check=False)
                 else:
                     print_success("ZSH is already the default shell")
             # 3. The .zshrc is handled in the dotfiles step
@@ -197,39 +196,27 @@ class Installer:
             print_header("Git Configuration")
             # Check user.name
             result = run_command(
-                "git config --global user.name",
+                ["git", "config", "--global", "user.name"],
                 check=False,
                 capture=True,
             )
             if not result.stdout.strip():
                 name = prompt_input("Enter your Git user.name")
                 if name:
-                    print_info(f"$ git config --global user.name \"{name}\"")
-                    subprocess.run(
-                        ["git", "config", "--global", "user.name", name],
-                        check=True,
-                        text=True,
-                        capture_output=False
-                    )
+                    run_command(["git", "config", "--global", "user.name", name])
             else:
                 print_success(f"Git user.name = {result.stdout.strip()}")
 
             # Check user.email
             result = run_command(
-                "git config --global user.email",
+                ["git", "config", "--global", "user.email"],
                 check=False,
                 capture=True,
             )
             if not result.stdout.strip():
                 email = prompt_input("Enter your Git user.email")
                 if email:
-                    print_info(f"$ git config --global user.email \"{email}\"")
-                    subprocess.run(
-                        ["git", "config", "--global", "user.email", email],
-                        check=True,
-                        text=True,
-                        capture_output=False
-                    )
+                    run_command(["git", "config", "--global", "user.email", email])
             else:
                 print_success(f"Git user.email = {result.stdout.strip()}")
 
@@ -245,7 +232,8 @@ class Installer:
                 ):
                     print_step("Generating SSH key…")
                     key_path.parent.mkdir(parents=True, exist_ok=True)
-                    run_command(
-                        f'ssh-keygen -t ed25519 -f "{key_path}" -N ""',
-                    )
+                    run_command([
+                        "ssh-keygen", "-t", "ed25519",
+                        "-f", str(key_path), "-N", "",
+                    ])
                     print_success(f"SSH key generated: {key_path}")

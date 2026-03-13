@@ -8,6 +8,8 @@ Validates that every OS config file:
 """
 from __future__ import annotations
 
+from collections import Counter
+
 import pytest
 import yaml
 from pathlib import Path
@@ -59,7 +61,7 @@ class TestYamlConfigs:
         all_ids: list[str] = []
         for section in KNOWN_SECTIONS:
             all_ids.extend(data.get(section, []))
-        duplicates = {x for x in all_ids if all_ids.count(x) > 1}
+        duplicates = {item for item, count in Counter(all_ids).items() if count > 1}
         assert not duplicates, (
             f"{filename}: duplicate package IDs found: {duplicates}"
         )
