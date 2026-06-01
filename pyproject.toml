@@ -1,0 +1,22 @@
+[project]
+name = "os-setup"
+version = "0.1.0"
+description = "Cross-platform developer environment setup CLI"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+os-setup = "os_setup.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

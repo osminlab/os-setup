@@ -1,0 +1,77 @@
+# ──────────────────────────────────────────────────
+# ubuntu.yaml — Ubuntu packages (apt & snap)
+# ──────────────────────────────────────────────────
+
+# Unwanted packages to remove (e.g., bloatware)
+remove:
+  # - libreoffice-common
+  # - thunderbird
+  # - snap:snap-store
+
+# Core tools you'd want on every machine
+essentials:
+  # Base
+  - git
+  - curl
+  - wget
+  - build-essential
+
+  # Browsers
+  - "script:curl -fsS https://dl.brave.com/install.sh | sh"
+
+  # Productivity
+  - snap:notion-snap-reborn
+  - snap:obsidian --classic
+  - snap:discord
+  - snap:spotify
+
+  # Utilities
+  - p7zip-full
+  - vlc
+
+# Development-specific tools
+dev_tools:
+  # IDEs
+  - snap:code --classic
+
+  # Terminal & Shells
+  - zsh
+  - snap:powershell --classic
+
+  # Languages and Runtimes
+  - python3
+  - python3-pip
+  - nodejs
+  - npm
+  - docker.io
+  - docker-compose
+
+  # API tools
+  - snap:postman
+  - snap:google-cloud-cli --classic
+
+  # Database tools
+  - duckdb
+  - postgresql
+  - snap:dbeaver-ce
+
+# Terminal enhancement utilities
+cli_tools:
+  - fzf
+  - tree
+  - bat
+  - zoxide
+
+# ──────────────────────────────────────────────────
+# Detected additional packages (commented out)
+# ──────────────────────────────────────────────────
+
+# - google-chrome-stable
+# - brave-browser
+# - antigravity
+# - python3-netifaces
+# - snap:thunderbird
+# - snap:firmware-updater
+# - snap:snap-store
+# - tmux
+# - script: "sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

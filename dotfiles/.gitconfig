@@ -1,0 +1,29 @@
+# ──────────────────────────────────────────────────
+# .gitconfig — sensible Git defaults
+# ──────────────────────────────────────────────────
+
+[core]
+    editor = vim
+    autocrlf = input
+    pager = less -FRX
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[color]
+    ui = auto
+
+[alias]
+    st = status -sb
+    co = checkout
+    br = branch
+    ci = commit
+    lg = log --oneline --graph --decorate --all
+    unstage = reset HEAD --
+    last = log -1 HEAD

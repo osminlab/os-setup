@@ -1,0 +1,44 @@
+name: CI — Fedora (container)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Test on Fedora (Docker container)
+    runs-on: ubuntu-latest
+    # GitHub Actions has no native Fedora runner.
+    # We use a Fedora container on top of ubuntu-latest — dnf is real inside it.
+    container:
+      image: fedora:latest
+
+    steps:
+      - name: Install system dependencies
+        # curl and git are needed before checkout and uv installation
+        run: dnf install -y git curl python3 python3-pip
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Run tests
+        run: uv run pytest tests/ -v --junit-xml=results.xml
+
+      - name: Smoke test — CLI version
+        run: uv run python -m os_setup.cli --version
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-fedora
+          path: results.xml
+          retention-days: 30

@@ -1,0 +1,33 @@
+# ──────────────────────────────────────────────────
+# VS Code Extensions
+# One extension ID per line. Lines starting with #
+# are ignored.
+# ──────────────────────────────────────────────────
+
+# ── Python ──────────────────────────────────────
+ms-python.python
+ms-python.vscode-pylance
+
+# ── JavaScript / TypeScript ─────────────────────
+dbaeumer.vscode-eslint
+esbenp.prettier-vscode
+
+# ── Git ─────────────────────────────────────────
+eamodio.gitlens
+mhutchie.git-graph
+
+# ── Docker ──────────────────────────────────────
+ms-azuretools.vscode-docker
+
+# ── Remote / WSL ────────────────────────────────
+ms-vscode-remote.remote-wsl
+ms-vscode-remote.remote-containers
+
+# ── Productivity ────────────────────────────────
+formulahendry.auto-rename-tag
+christian-kohler.path-intellisense
+streetsidesoftware.code-spell-checker
+
+# ── Theme / UI ──────────────────────────────────
+PKief.material-icon-theme
+zhuangtongfa.material-theme
