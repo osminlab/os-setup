@@ -2,6 +2,11 @@
 # fedora.yaml — Fedora / RHEL family packages (dnf)
 # ──────────────────────────────────────────────────
 
+# Unwanted packages to remove (e.g., bloatware)
+remove:
+  # - libreoffice-common
+  # - thunderbird
+
 # Core tools you'd want on every machine
 essentials:
   - git

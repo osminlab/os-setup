@@ -93,6 +93,7 @@ class Installer:
         print()
 
         self._step_update_pm()
+        self._step_remove_packages()
         self._step_essentials()
         self._step_dev_tools()
         self._step_cli_tools()
@@ -112,6 +113,15 @@ class Installer:
         if self._should_run("package manager update"):
             print_header("Updating Package Manager")
             self.pm.update()
+
+    def _step_remove_packages(self) -> None:
+        packages: list[str] = self.config.get("remove", [])
+        if not packages:
+            return
+        if self._should_run("removal of unwanted packages"):
+            print_header("Removing Unwanted Packages")
+            for pkg in packages:
+                self.pm.uninstall_if_installed(pkg)
 
     def _step_essentials(self) -> None:
         packages: list[str] = self.config.get("essentials", [])
@@ -201,9 +211,11 @@ class Installer:
                 capture=True,
             )
             if not result.stdout.strip():
-                name = prompt_input("Enter your Git user.name")
-                if name:
+                name = prompt_input("Enter your Git user.name").strip()
+                if name and not name.startswith("-"):
                     run_command(["git", "config", "--global", "user.name", name])
+                elif name.startswith("-"):
+                    print_warning("Invalid name: cannot start with a hyphen.")
             else:
                 print_success(f"Git user.name = {result.stdout.strip()}")
 
@@ -214,9 +226,11 @@ class Installer:
                 capture=True,
             )
             if not result.stdout.strip():
-                email = prompt_input("Enter your Git user.email")
-                if email:
+                email = prompt_input("Enter your Git user.email").strip()
+                if email and not email.startswith("-"):
                     run_command(["git", "config", "--global", "user.email", email])
+                elif email.startswith("-"):
+                    print_warning("Invalid email: cannot start with a hyphen.")
             else:
                 print_success(f"Git user.email = {result.stdout.strip()}")
 

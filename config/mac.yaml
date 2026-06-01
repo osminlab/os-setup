@@ -2,6 +2,10 @@
 # mac.yaml — macOS packages (Homebrew formulae & casks)
 # ──────────────────────────────────────────────────
 
+# Unwanted packages to remove (e.g., bloatware)
+remove:
+  # - iterm2
+
 # Core tools you'd want on every machine
 essentials:
   - git

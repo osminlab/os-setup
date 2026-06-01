@@ -2,6 +2,11 @@
 # windows.yaml — Windows packages (winget IDs)
 # ──────────────────────────────────────────────────
 
+# Unwanted packages to remove (e.g., bloatware)
+remove:
+  # - Microsoft.ZuneVideo
+  # - Microsoft.BingWeather
+
 # Core tools you'd want on every machine
 essentials:
   # Browsers

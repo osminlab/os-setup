@@ -20,6 +20,7 @@ To add a new distro:
 from __future__ import annotations
 
 import shutil
+import shlex
 from abc import ABC, abstractmethod
 
 from os_setup.utils import print_error, print_step, print_success, print_warning, run_command
@@ -39,6 +40,10 @@ class PackageManager(ABC):
         """Install a single package by name (or winget ID, brew formula…)."""
 
     @abstractmethod
+    def uninstall(self, package: str) -> None:
+        """Remove a single package by name."""
+
+    @abstractmethod
     def is_installed(self, package: str) -> bool:
         """Return True if *package* is already present."""
 
@@ -54,6 +59,18 @@ class PackageManager(ABC):
         except Exception as exc:
             print_error(f"Failed to install {package}: {exc}")
 
+    def uninstall_if_installed(self, package: str) -> None:
+        """Remove only when the package is present."""
+        try:
+            if not self.is_installed(package):
+                print_success(f"{package} is not installed")
+            else:
+                print_step(f"Removing {package}…")
+                self.uninstall(package)
+                print_success(f"{package} removed")
+        except Exception as exc:
+            print_error(f"Failed to remove {package}: {exc}")
+
 
 # ── Winget (Windows) ────────────────────────────────────────────────────────
 
@@ -67,6 +84,12 @@ class WingetManager(PackageManager):
             "winget", "install", "-e", "--id", package,
             "--accept-package-agreements",
             "--accept-source-agreements",
+            "--disable-interactivity",
+        ])
+
+    def uninstall(self, package: str) -> None:
+        run_command([
+            "winget", "uninstall", "-e", "--id", package,
             "--disable-interactivity",
         ])
 
@@ -88,9 +111,61 @@ class AptManager(PackageManager):
         run_command("sudo apt update && sudo apt upgrade -y", shell=True)
 
     def install(self, package: str) -> None:
+        if package.startswith("snap:"):
+            # Use shlex.split to safely parse arguments like "snap:code --classic"
+            snap_args = shlex.split(package[5:].strip())
+            run_command(["sudo", "snap", "install"] + snap_args)
+            return
+
+        if package.startswith("script:"):
+            cmd = package[7:].strip()
+            print_warning(f"SECURITY ADVISORY: About to execute arbitrary script: '{cmd}'")
+            # Always prompt for script execution as a security measure, even in automatic mode (unless explicitly bypassed, which we don't support here yet)
+            from os_setup.utils import prompt_confirm
+            if not prompt_confirm("Do you want to run this script?", default=False):
+                print_error("Script execution aborted by user.")
+                return
+
+            print_step("Running script…")
+            run_command(cmd, shell=True)
+            return
+
         run_command(["sudo", "apt", "install", "-y", package])
 
+    def uninstall(self, package: str) -> None:
+        if package.startswith("snap:"):
+            # Extract only the actual package name (first token)
+            args = shlex.split(package[5:].strip())
+            if args:
+                run_command(["sudo", "snap", "remove", args[0]])
+            return
+
+        if package.startswith("script:"):
+            print_warning("No automated way to uninstall a script-based installation.")
+            return
+
+        run_command(["sudo", "apt", "purge", "-y", package])
+
     def is_installed(self, package: str) -> bool:
+        if package.startswith("script:"):
+            # No general way to check if an arbitrary script was already run,
+            # so we return False and let the script handle its own idempotency.
+            return False
+
+        if package.startswith("snap:"):
+            # e.g. "snap:code --classic" -> "code"
+            # Extract only the actual package name (first token)
+            args = shlex.split(package[5:].strip())
+            if not args:
+                return False
+            pkg_name = args[0]
+            result = run_command(
+                ["snap", "list", pkg_name],
+                check=False,
+                capture=True,
+            )
+            return result.returncode == 0
+
         result = run_command(
             ["dpkg", "-s", package],
             check=False,
@@ -108,6 +183,9 @@ class DnfManager(PackageManager):
 
     def install(self, package: str) -> None:
         run_command(["sudo", "dnf", "install", "-y", package])
+
+    def uninstall(self, package: str) -> None:
+        run_command(["sudo", "dnf", "remove", "-y", package])
 
     def is_installed(self, package: str) -> bool:
         result = run_command(
@@ -128,6 +206,9 @@ class PacmanManager(PackageManager):
     def install(self, package: str) -> None:
         run_command(["sudo", "pacman", "-S", "--noconfirm", package])
 
+    def uninstall(self, package: str) -> None:
+        run_command(["sudo", "pacman", "-Rs", "--noconfirm", package])
+
     def is_installed(self, package: str) -> bool:
         result = run_command(
             ["pacman", "-Q", package],
@@ -147,17 +228,27 @@ class BrewManager(PackageManager):
     def update(self) -> None:
         if not shutil.which("brew"):
             print_step("Homebrew not found — installing…")
-            # shell=True required: Homebrew installer uses shell eval
+            # shell=False: Pass the entire command sequence as arguments to bash securely
             run_command(
-                f'NONINTERACTIVE=1 /bin/bash -c '
-                f'"$(curl -fsSL {self._BREW_INSTALL_URL})"',
-                shell=True,
+                [
+                    "/bin/bash", 
+                    "-c", 
+                    f'NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL {self._BREW_INSTALL_URL})"'
+                ]
             )
         print_step("Updating Homebrew…")
         run_command(["brew", "update"])
 
     def install(self, package: str) -> None:
         run_command(["brew", "install", package])
+
+    def uninstall(self, package: str) -> None:
+        # Check if it's a cask first
+        result = run_command(["brew", "list", "--cask", package], check=False, capture=True)
+        if result.returncode == 0:
+            run_command(["brew", "uninstall", "--cask", package])
+        else:
+            run_command(["brew", "uninstall", package])
 
     def install_cask(self, cask: str) -> None:
         """Install a Homebrew Cask (GUI application) if not already installed."""
